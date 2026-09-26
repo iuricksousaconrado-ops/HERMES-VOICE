@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>HERMES VOICE</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+      background: #111;
+      color: white;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    #resultado {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>HERMES</h1>
+
+  <p>Assistente de voz</p>
+
+  <button onclick="ouvir()">🎙️ Falar</button>
+
+  <div id="resultado">
+    Toque no botão e fale.
+  </div>
+
+  <script>
+
+    function ouvir() {
+
+      var SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        document.getElementById("resultado").innerText =
+          "Seu navegador não suporta reconhecimento de voz.";
+        return;
+      }
+
+      var reconhecimento = new SpeechRecognition();
+
+      reconhecimento.lang = "pt-BR";
+      reconhecimento.continuous = false;
+      reconhecimento.interimResults = false;
+
+      document.getElementById("resultado").innerText =
+        "🎙️ Ouvindo...";
+
+      reconhecimento.start();
+
+      reconhecimento.onresult = function(event) {
+
+        var texto =
+          event.results[0][0].transcript;
+
+        document.getElementById("resultado").innerText =
+          "Você disse: " + texto;
+      };
+
+      reconhecimento.onerror = function(event) {
+
+        document.getElementById("resultado").innerText =
+          "Erro: " + event.error;
+      };
+    }
+
+  </script>
+
+</body>
+</html>
