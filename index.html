@@ -44,44 +44,75 @@
 
   <script>
 
-    function ouvir() {
+   <script>
 
-      var SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
+const URL_HERMES = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
 
-      if (!SpeechRecognition) {
-        document.getElementById("resultado").innerText =
-          "Seu navegador não suporta reconhecimento de voz.";
-        return;
-      }
+var reconhecimento = new (
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition
+)();
 
-      var reconhecimento = new SpeechRecognition();
+reconhecimento.lang = "pt-BR";
+reconhecimento.continuous = false;
+reconhecimento.interimResults = false;
 
-      reconhecimento.lang = "pt-BR";
-      reconhecimento.continuous = false;
-      reconhecimento.interimResults = false;
+function falar() {
+
+  document.getElementById("resultado").innerText =
+    "🎙️ Estou ouvindo...";
+
+  reconhecimento.start();
+}
+
+reconhecimento.onresult = function(event) {
+
+  var texto = event.results[0][0].transcript;
+
+  document.getElementById("resultado").innerText =
+    "Você disse: " + texto;
+
+  var url =
+    URL_HERMES +
+    "?comando=" +
+    encodeURIComponent(texto);
+
+  fetch(url)
+    .then(function(resposta) {
+      return resposta.text();
+    })
+    .then(function(resposta) {
 
       document.getElementById("resultado").innerText =
-        "🎙️ Ouvindo...";
+        resposta;
 
-      reconhecimento.start();
+      falarResposta(resposta);
+    })
+    .catch(function(erro) {
 
-      reconhecimento.onresult = function(event) {
+      document.getElementById("resultado").innerText =
+        "Erro ao conectar com o HERMES.";
+    });
+};
 
-        var texto =
-          event.results[0][0].transcript;
+reconhecimento.onerror = function(event) {
 
-        document.getElementById("resultado").innerText =
-          "Você disse: " + texto;
-      };
+  document.getElementById("resultado").innerText =
+    "Erro no reconhecimento de voz: " +
+    event.error;
+};
 
-      reconhecimento.onerror = function(event) {
+function falarResposta(texto) {
 
-        document.getElementById("resultado").innerText =
-          "Erro: " + event.error;
-      };
-    }
+  var voz = new SpeechSynthesisUtterance(texto);
+
+  voz.lang = "pt-BR";
+  voz.rate = 1;
+  voz.pitch = 1;
+
+  speechSynthesis.speak(voz);
+}
+
 
   </script>
 
